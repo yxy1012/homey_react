@@ -1,0 +1,22 @@
+.featured-title{
+    text-align: center;
+    margin: 2rem 0 2rem 0;
+}
+.featured-list{
+    display: flex;
+    justify-content: center;
+}
+.featured-item{
+    margin: 1rem;
+    width: 20rem;
+    height: 25rem
+}
+.featured-item-image{
+    width: 100%;
+}
+.featured-item-name{
+    text-align: center;
+}
+.featured-item-price{
+    text-align: center;
+}

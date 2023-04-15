@@ -1,0 +1,14 @@
+.copyright{
+    background-color: #e6e4f6; 
+    padding: 1rem;
+    display: flex;
+    justify-content: space-evenly;
+}
+.copyright-content{
+    color: darkgray;
+    font-weight: bold;
+    align-self: center;
+}
+.share-icon{
+    width: 8rem;
+}

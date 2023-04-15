@@ -1,23 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import Home from './components/Home'
+import HomeHeader from './components/HomeHeader';
+import Brands from './components/Brands'
+import PageFooter from './components/PageFooter';
+import Copyright from './components/Copyright'
+import { ConfigProvider } from 'antd';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ConfigProvider theme={{token: {colorPrimary: '#e628a6', colorLink: '#e628a6', colorLinkHover:'#ecb0d8'}}}>
+        <HomeHeader/>
+        <Home/>
+        <Brands/>
+        <PageFooter/>
+        <Copyright/>
+      </ConfigProvider>
     </div>
   );
 }

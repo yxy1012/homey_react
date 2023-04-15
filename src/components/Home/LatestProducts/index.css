@@ -1,0 +1,29 @@
+.latest-title{
+    text-align: center;
+    margin: 2rem 0 2rem 0;
+}
+.latest-links{
+    text-align: center;
+}
+.latest-link{
+    margin: 0 2rem 0 2rem;
+}
+.latest-list{
+    display: flex;
+    justify-content: center;
+}
+.latest-item{
+    width: 20rem;
+    margin: 0 1rem 0 1rem;
+}
+.latest-item-image{
+    width: 100%;
+}
+.latest-item-originalPrice{
+    float: right; 
+    color: red; 
+    text-decoration: line-through;
+}
+.latest-item-price{
+    float: right;
+}
