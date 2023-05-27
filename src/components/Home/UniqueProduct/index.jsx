@@ -19,8 +19,13 @@ export default function UniqueProduct() {
       <img src={uniqueProduct.src} className='unique-product-image'  alt="img"/>
       <div className='unique-product-description'>
         <h1>Unique Features of Latest & Trending Products</h1>
-        <ul>{uniqueProduct.details.map(item=><li className='unique-product-description-item'>{item}</li>)}</ul>
-        <div class="unique-product-detail">
+        <ul>
+          {
+            uniqueProduct.details.map((item, index)=>
+              <li key={index} className='unique-product-description-item'>{item}</li>)
+          }
+        </ul>
+        <div className="unique-product-detail">
           <Button type="primary">Add To Cart</Button>
           <ul className='unique-product-detail-ul'>
             <li>{uniqueProduct.name}</li>

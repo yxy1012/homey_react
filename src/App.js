@@ -1,8 +1,8 @@
-import Home from './components/Home'
+import Home from './components/Home';
 import HomeHeader from './components/HomeHeader';
 import Brands from './components/Brands'
 import PageFooter from './components/PageFooter';
-import Copyright from './components/Copyright'
+import Copyright from './components/Copyright';
 import { ConfigProvider } from 'antd';
 
 function App() {

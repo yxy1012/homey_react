@@ -67,8 +67,8 @@ export default function TrendingProducts() {
       <h1 className='trending-title'>Trending Products</h1>
       <div className='trending-list'>
         {
-            items.map(item=>(
-                <Card className='trending-item' bodyStyle={cardStyle}>
+            items.map((item, index)=>(
+                <Card key={index} className='trending-item' bodyStyle={cardStyle}>
                     <img src={item.src} className='trending-item-image' alt='img'></img>
                     <h4>{item.name}</h4>
                     <span>{item.price ? "$" + item.price.toFixed(2) : item.price}</span>
@@ -81,8 +81,8 @@ export default function TrendingProducts() {
       </div>
       <div className='trending-card-side'>
         {
-            trendCards.map(item=>(
-                <div style={{backgroundColor:item.color}} className='trending-card'>
+            trendCards.map((item, index)=>(
+                <div key={index} style={{backgroundColor:item.color}} className='trending-card'>
                     <h3>{item.title}</h3>
                     <Button type="link" className='trending-card-button'>{item.action}</Button>
                     <div className='trending-card-image-wrapper'>
@@ -93,8 +93,8 @@ export default function TrendingProducts() {
         }
         <div>
             {
-                trendSide.map(item=>(
-                    <div className='trend-side-item'>
+                trendSide.map((item, index)=>(
+                    <div key={index} className='trend-side-item'>
                         <img src={item.src} className='trend-side-item-image' alt='img'></img>
                         <div>
                             <div className='trend-side-item-name'>{item.name}</div>

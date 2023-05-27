@@ -25,7 +25,7 @@ const customerCare = [
 
 const buttonStyle1 = {
   padding: '0',
-  'margin-top':'0.5rem'
+  marginTop:'0.5rem'
 }
 
 const buttonStyle2 = {
@@ -41,15 +41,15 @@ export default function PageFooter() {
                 <Input placeholder='Enter Email Address'/>
                 <Button type="primary">Submit</Button>
             </Space.Compact>
-            {homey.map(item=>(<Button type="link" style={buttonStyle1}>{item.title}</Button>))}
+            {homey.map((item, index)=>(<Button key={index} type="link" style={buttonStyle1}>{item.title}</Button>))}
         </div>
         <div className='page-footer-col'>
           <h3>Categories</h3>
-          {categories.map(item=>(<Button type="link" style={buttonStyle2}>{item.title}</Button>))}
+          {categories.map((item, index)=>(<Button key={index} type="link" style={buttonStyle2}>{item.title}</Button>))}
         </div>
         <div className='page-footer-col'>
           <h3>Customer Care</h3>
-          {customerCare.map(item=>(<Button type="link" style={buttonStyle2}>{item.title}</Button>))}
+          {customerCare.map((item, index)=>(<Button key={index} type="link" style={buttonStyle2}>{item.title}</Button>))}
         </div>
     </div>
   )

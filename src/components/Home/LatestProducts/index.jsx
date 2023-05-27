@@ -1,5 +1,4 @@
 import React from 'react'
-import { nanoid } from 'nanoid'
 import {Button, ConfigProvider} from 'antd'
 import './index.css'
 
@@ -37,14 +36,14 @@ export default function LatestProducts() {
       <h1 className='latest-title'>Latest Products</h1>
       <div className='latest-links'>
         <ConfigProvider theme={{token: {colorLink: '#f78989', colorLinkHover:'#efcccc'}}}>
-          {links.map(item=>(
-              <Button type="link" className='latest-link'>{item.name}</Button>
+          {links.map((item, index)=>(
+              <Button key={index} type="link" className='latest-link'>{item.name}</Button>
           ))}
         </ConfigProvider>
       </div>
       <div className='latest-list'>
-        {latestProducts.map(item => (
-            <div key={nanoid()} className='latest-item'>
+        {latestProducts.map((item, index) => (
+            <div key={index} className='latest-item'>
                 <img src={item.src} className="latest-item-image" alt="img"/>
                 <span>{item.name}</span>
                 <span className='latest-item-originalPrice'>

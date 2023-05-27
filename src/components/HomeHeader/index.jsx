@@ -4,6 +4,7 @@ import { Button, Menu } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import './index.css'
 import { nanoid } from 'nanoid';
+import { connect } from 'react-redux';
 
 const items = [
     {
@@ -25,7 +26,7 @@ const items = [
     },
   ];
 
-export default function HomeHeader() {
+function HomeHeader(props) {
     const [current, setCurrent] = useState('logo');
     const onClick = (e) => {
       console.log('click ', e);
@@ -42,3 +43,7 @@ export default function HomeHeader() {
         </Fragment>
     )
 }
+
+export default connect(
+  state => ({user: state.user})
+)(HomeHeader);
