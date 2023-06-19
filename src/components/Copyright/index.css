@@ -9,6 +9,8 @@
     font-weight: bold;
     align-self: center;
 }
-.share-icon{
-    width: 8rem;
+.copyright-button{
+    color: #ffffff;
+    background-color: rgb(20, 20, 110);
+    margin-right: 0.5rem;
 }

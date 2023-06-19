@@ -1,10 +1,15 @@
 import React, { Fragment } from "react";
 import { useState } from "react";
-import { Button, Menu } from "antd";
-import { UserOutlined, HeartOutlined } from "@ant-design/icons";
+import { Button, Menu, Input } from "antd";
+import {
+  UserOutlined,
+  HeartOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 import "./index.css";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+const { Search } = Input;
 
 const items = [
   {
@@ -37,8 +42,8 @@ const items = [
   },
   {
     label: (
-      <Link to="/myOrder">
-        <div className="menuItem">Order</div>
+      <Link to="/myOrders">
+        <div className="menuItem">My Orders</div>
       </Link>
     ),
     key: "order",
@@ -60,6 +65,12 @@ const HomeHeader = () => {
           </Link>
         </Button>
         <Button type="link" className="pageHeader-item">
+          <Link to="/shoppingCart">
+            Shopping Cart
+            <ShoppingCartOutlined />
+          </Link>
+        </Button>
+        <Button type="link" className="pageHeader-item">
           <Link to="/myAccount">
             Login
             <UserOutlined />
@@ -73,6 +84,7 @@ const HomeHeader = () => {
           mode="horizontal"
           items={items}
         />
+        <Search style={{width: "15rem"}} placeholder="input search text" enterButton />
       </div>
     </Fragment>
   );

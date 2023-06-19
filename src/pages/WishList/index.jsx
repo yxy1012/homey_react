@@ -1,10 +1,10 @@
 import React from "react";
 import { Card, Button } from "antd";
 import {
-    ShoppingCartOutlined,
-    HeartOutlined,
-    ZoomInOutlined
-  } from "@ant-design/icons"
+  ShoppingCartOutlined,
+  HeartOutlined,
+  ZoomInOutlined,
+} from "@ant-design/icons";
 import "./index.css";
 import { nanoid } from "nanoid";
 
@@ -32,10 +32,8 @@ export default function Wishlist() {
         alt="wishlist"
       />
       <div className="wishlist-header">
-        <div>
-          <h3 style={{ margin: 0 }}>My Wishlist</h3>
-          <p className="wishlist-results">About {1} results</p>
-        </div>
+        <h3 style={{ margin: 0 }}>My Wishlist</h3>
+        <p className="wishlist-results">About {1} results</p>
       </div>
       {wishlist.map((item) => (
         <Card className="wishlist-card" key={nanoid()}>
@@ -60,9 +58,22 @@ export default function Wishlist() {
                 {global.priceFilter(item.product.original_price)}
               </span>
               <p style={{ color: "darkgray" }}>{item.product.description}</p>
-              <Button shape="circle" style={{marginRight: "0.5rem"}} icon={<ShoppingCartOutlined />} />
-              <Button shape="circle" style={{marginRight: "0.5rem"}} icon={<ZoomInOutlined />} />
-              <Button shape="circle" style={{marginRight: "0.5rem"}} type="primary" icon={<HeartOutlined />} />
+              <Button
+                shape="circle"
+                style={{ marginRight: "0.5rem" }}
+                icon={<ShoppingCartOutlined />}
+              />
+              <Button
+                shape="circle"
+                style={{ marginRight: "0.5rem" }}
+                icon={<ZoomInOutlined />}
+              />
+              <Button
+                shape="circle"
+                style={{ marginRight: "0.5rem" }}
+                type="primary"
+                icon={<HeartOutlined />}
+              />
             </div>
           </div>
         </Card>

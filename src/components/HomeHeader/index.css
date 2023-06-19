@@ -13,6 +13,7 @@
 .topMenu{
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 .menuItem{
     text-align: center;

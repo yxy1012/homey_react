@@ -39,7 +39,7 @@ export default function PageFooter() {
             <h1>Homey</h1>
             <Space.Compact className='page-footer-input-wrapper'>
                 <Input placeholder='Enter Email Address'/>
-                <Button type="primary">Submit</Button>
+                <Button type="primary">Sign Up</Button>
             </Space.Compact>
             {homey.map((item, index)=>(<Button key={index} type="link" style={buttonStyle1}>{item.title}</Button>))}
         </div>

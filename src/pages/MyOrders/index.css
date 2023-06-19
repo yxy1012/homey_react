@@ -1,16 +1,16 @@
-.wishlist{
+.myOrders{
     height: 15rem;
     width: 100%;
 }
-.wishlist-header{
+.my-orders-header{
     margin: 3rem 20rem 3rem 20rem;
 }
-.wishlist-results{
+.my-orders-results{
     margin: 0; 
     font-size: small; 
     color: darkgrey;
 }
-.wishlist-card{
+.my-orders-card{
     width: 60rem;
     padding: 1rem 1rem 1rem 1rem;
     margin: 0 auto;
@@ -18,9 +18,10 @@
     margin-top: 3rem;
     margin-bottom: 3rem;
 }
-.wishlist-container{
+.my-orders-container{
     display: flex;
 }
-.wishlist-item-image{
+.my-order-item-image{
     width: 15rem;
 }
+

@@ -7,6 +7,10 @@ import myAccount from './pages/MyAccount';
 import shopCatalog from './pages/ShopCatalog';
 import ProductDetails from './pages/ProductDetails';
 import Wishlist from './pages/WishList';
+import ShoppingCart from './pages/ShoppingCart';
+import Checkout from './pages/Checkout';
+import OrderCompleted from './pages/OrderCompleted';
+import MyOrders from './pages/MyOrders';
 import { ConfigProvider } from 'antd';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
@@ -21,6 +25,10 @@ function App() {
           <Route path="/shopCatalog" component={shopCatalog}/>
           <Route path="/productDetails" component={ProductDetails}/>
           <Route path="/wishlist" component={Wishlist}/>
+          <Route path="/shoppingCart" component={ShoppingCart}/>
+          <Route path="/checkout" component={Checkout}/>
+          <Route path="/orderCompleted" component={OrderCompleted}/>
+          <Route path="/myOrders" component={MyOrders}/>
           <Redirect to="/home"/>
         </Switch>
         <Brands/>
