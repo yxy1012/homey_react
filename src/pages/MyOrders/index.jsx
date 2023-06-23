@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Button } from "antd";
 import "./index.css";
+import { connect } from "react-redux";
 
 const orderItems = [
   {
@@ -31,7 +32,7 @@ const orderItems = [
   },
 ];
 
-export default function MyOrders() {
+const MyOrders = () => {
   return (
     <div>
       <img
@@ -65,4 +66,7 @@ export default function MyOrders() {
       ))}
     </div>
   );
-}
+};
+
+export default connect((state) => ({ user: state.user }))(MyOrders);
+

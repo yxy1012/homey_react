@@ -1,38 +1,70 @@
-import React from 'react'
-import { Button } from 'antd'
-import './index.css'
+import React from "react";
+import { Button, Modal } from "antd";
+import "./index.css";
+import axios from "@/axios";
+import { connect } from "react-redux";
 
 const uniqueProduct = {
-    src: `${global.constants.s3Image}uniqueProduct.e18fcd6c.png`,
-    details: [
-      'All frames constructed with hardwood solids and laminates',
-      'Reinforced with wood dowels, glue, screw-nails corner blocks and machine nails',
-      'Arms, backs and seats are structurally reinforced'
-    ],
-    name: 'B&B Italian Sofa',
-    price: 32
-}
+  id: 2,
+  src: `${global.constants.s3Image}uniqueProduct.e18fcd6c.png`,
+  details: [
+    "All frames constructed with hardwood solids and laminates",
+    "Reinforced with wood dowels, glue, screw-nails corner blocks and machine nails",
+    "Arms, backs and seats are structurally reinforced",
+  ],
+  name: "B&B Italian Sofa",
+  price: 135,
+};
 
-export default function UniqueProduct() {
+const UniqueProduct = ({ user }) => {
+  const [modal, contextHolder] = Modal.useModal();
+  const shoppingCart = {
+    user: { id: user.id },
+    product: { id: uniqueProduct.id },
+    quantity: 1,
+  };
+  const successConfig = {
+    title: "Success",
+    content: <p>Add Successfully!</p>
+  };
+  const warningConfig = {
+    title: "Warning",
+    content: <p>Fail to Add!</p>,
+  };
+  const addToCart = () => {
+    axios.post("/shoppingcarts/save", shoppingCart).then((resp) => {
+      if (resp.data === "success") {
+        modal.success(successConfig);
+      } else {
+        modal.warning(warningConfig);
+      }
+    });
+  };
   return (
-    <div className='unique-product'>
-      <img src={uniqueProduct.src} className='unique-product-image'  alt="img"/>
-      <div className='unique-product-description'>
+    <div className="unique-product">
+      <img src={uniqueProduct.src} className="unique-product-image" alt="img" />
+      <div className="unique-product-description">
         <h1>Unique Features of Latest & Trending Products</h1>
         <ul>
-          {
-            uniqueProduct.details.map((item, index)=>
-              <li key={index} className='unique-product-description-item'>{item}</li>)
-          }
+          {uniqueProduct.details.map((item, index) => (
+            <li key={index} className="unique-product-description-item">
+              {item}
+            </li>
+          ))}
         </ul>
         <div className="unique-product-detail">
-          <Button type="primary">Add To Cart</Button>
-          <ul className='unique-product-detail-ul'>
+          <Button type="primary" onClick={addToCart}>
+            Add To Cart
+          </Button>
+          <ul className="unique-product-detail-ul">
             <li>{uniqueProduct.name}</li>
-            <li>${uniqueProduct.price}</li>
+            <li>{global.priceFilter(uniqueProduct.price)}</li>
           </ul>
         </div>
       </div>
+      {contextHolder}
     </div>
-  )
-}
+  );
+};
+
+export default connect((state) => ({ user: state.user }))(UniqueProduct);

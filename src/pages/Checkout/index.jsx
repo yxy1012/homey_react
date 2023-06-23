@@ -1,39 +1,87 @@
-import React, { useState } from "react";
-import { Input, Checkbox, Button, Card } from "antd";
+import React, { useEffect, useState } from "react";
+import { Input, Checkbox, Button, Card, Modal } from "antd";
 import { useHistory } from "react-router-dom";
 import "./index.css";
+import axios from "@/axios";
+import { connect } from "react-redux";
 
-const checkoutItems = [
-  {
-    key: 1,
-    name: "Mustard Chair",
-    image: `${global.constants.s3Resources}MustardChair.png`,
-    price: 42,
-    quantity: 1,
-    total: 42,
-  },
-  {
-    key: 2,
-    name: "Sulvex Chair",
-    image: `${global.constants.s3Resources}SulvexChair.png`,
-    price: 20,
-    quantity: 2,
-    total: 40,
-  },
-];
+const Checkout = ({user}) => {
+  const [checkoutItems, setCheckoutItems] = useState([]);
+  const [subtotals, setSubTotals] = useState(0);
+  const [totals, setTotals] = useState(0);
+  const [shippingAndTax, setShippingAndTax] = useState(0);
 
-const originSubTotals = checkoutItems.reduce((pre, cur) => pre + cur.total, 0);
-const originTotals = checkoutItems.reduce((pre, cur) => pre + cur.total, 0);
-
-export default function Checkout() {
-  const [subtotals] = useState(originSubTotals);
-  const [totals] = useState(originTotals);
+  const [modal, contextHolder] = Modal.useModal();
 
   const history = useHistory();
 
-  const proceedToCheckout = () => {
-    history.push("/orderCompleted");
+  const warningCheckoutConfig = {
+    title: "Warning",
+    content: <p>Fail to Checkout!</p>,
   };
+
+  const warningCalculateConfig = {
+    title: "Warning",
+    content: <p>Please Calculate Shipping!</p>,
+  };
+
+  const calculate = () => {
+    setShippingAndTax(subtotals * 0.08 + 5);
+  }
+
+  const proceedToCheckout = () => {
+    if(shippingAndTax !== 0){
+      const finalItems = [];
+      checkoutItems.forEach(item=>{
+        const date = new Date();
+        const finalItem = {
+          quantity: item.quantity,
+          total_amount: item.product.price * item.quantity,
+          status: "Completed",
+          date: date.toDateString().split( " " )[1] + " " + date.getDate(),
+          user: {
+            id: user.id
+          },
+          product: {
+            id: item.product.id
+          }
+        }
+        finalItems.push(finalItem);
+      })
+      axios.post("/orders/saveAll", finalItems).then(resp => {
+        if(resp.data === "success"){
+          axios.put("/shoppingcarts/deleteAll", checkoutItems).then(() => {
+            history.push("/orderCompleted");
+          })
+        }else{
+          modal.warning(warningCheckoutConfig);
+        }
+      })
+    }else{
+      modal.warning(warningCalculateConfig);
+    }
+  };
+
+  useEffect(() => {
+    if (user.id) {
+      axios.get("/shoppingcarts/findByUserId/" + user.id).then((resp) => {
+        setCheckoutItems(resp.data);
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const newSubTotals = checkoutItems.reduce(
+      (pre, cur) => pre + cur.quantity * cur.product.price,
+      0
+    );
+    setSubTotals(newSubTotals);
+  }, [checkoutItems]);
+
+  useEffect(() => {
+    setTotals(subtotals + shippingAndTax)
+  }, [subtotals, shippingAndTax]);
+
   return (
     <div>
       <img
@@ -95,7 +143,7 @@ export default function Checkout() {
               />
             </div>
             <div className="shipping-details-info-buttons-container">
-              <Button type="primary" style={{ marginRight: "16rem" }}>
+              <Button type="primary" style={{ marginRight: "16rem" }} onClick={calculate}>
                 Calculate Shipping
               </Button>
               <Button type="primary">Update Information</Button>
@@ -104,17 +152,17 @@ export default function Checkout() {
         </div>
         <div className="checkout-items-side-container">
           {checkoutItems.map((item) => (
-            <>
-              <div key={item.key} className="checkout-item">
+            <div key={item.id}>
+              <div className="checkout-item">
                 <img
                   className="checkout-item-image"
-                  src={item.image}
+                  src={item.product.image}
                   alt="checkout"
                 />
                 <div>
-                  <h5 style={{ marginBottom: 0 }}>{item.name}</h5>
+                  <h5 style={{ marginBottom: 0 }}>{item.product.name}</h5>
                   <span style={{ color: "darkgray", fontSize: "small" }}>
-                    {global.priceFilter(item.price)}
+                    {global.priceFilter(item.product.price)}
                   </span>
                   <span
                     style={{
@@ -127,11 +175,11 @@ export default function Checkout() {
                   </span>
                 </div>
                 <div style={{ margin: "2rem 0 0 3rem" }}>
-                  {global.priceFilter(item.price * item.quantity)}
+                  {global.priceFilter(item.product.price * item.quantity)}
                 </div>
               </div>
               <div className="checkout-bottom-line"></div>
-            </>
+            </div>
           ))}
           <Card className="checkout-totals-table">
             <div className="checkout-totals-table-items">
@@ -145,7 +193,7 @@ export default function Checkout() {
               <h3 style={{ textAlign: "left", margin: "0 0 0 0.5rem" }}>
                 Shipping & Tax:
               </h3>
-              <span>{global.priceFilter(0)}</span>
+              <span>{global.priceFilter(shippingAndTax)}</span>
             </div>
             <div className="checkout-bottom-line"></div>
             <div className="checkout-totals-table-items">
@@ -169,6 +217,9 @@ export default function Checkout() {
           </Card>
         </div>
       </div>
+      {contextHolder}
     </div>
   );
-}
+};
+
+export default connect((state)=>({user: state.user}))(Checkout);

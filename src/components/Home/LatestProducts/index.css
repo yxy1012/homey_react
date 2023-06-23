@@ -9,15 +9,17 @@
     margin: 0 2rem 0 2rem;
 }
 .latest-list{
+    margin-left: 15rem;
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
 }
 .latest-item{
     width: 20rem;
-    margin: 0 1rem 0 1rem;
+    margin: 1rem;
 }
 .latest-item-image{
     width: 100%;
+    height: 15rem;
 }
 .latest-item-originalPrice{
     float: right; 

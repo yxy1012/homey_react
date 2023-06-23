@@ -1,97 +1,170 @@
 import React, { useEffect, useState } from "react";
-import { Table, InputNumber, Button, Card } from "antd";
-import { useHistory  } from 'react-router-dom';
+import { Table, InputNumber, Button, Card, message, Modal } from "antd";
+import { useHistory } from "react-router-dom";
 import "./index.css";
 import tip from "../../assets/tip.png";
+import axios from "@/axios";
+import { connect } from "react-redux";
+import { CloseOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 
-const originData = [
-  {
-    key: 1,
-    name: "Mustard Chair",
-    image: `${global.constants.s3Resources}MustardChair.png`,
-    price: 42,
-    quantity: 1,
-    total: 42,
-  },
-  {
-    key: 2,
-    name: "Sulvex Chair",
-    image: `${global.constants.s3Resources}SulvexChair.png`,
-    price: 20,
-    quantity: 2,
-    total: 40,
-  },
-];
+const ShoppingCart = ({ user }) => {
+  const [data, setData] = useState([]);
+  const [subtotals, setSubTotals] = useState(0);
+  const [totals, setTotals] = useState(0);
 
-const originSubTotals = originData.reduce((pre, cur) => pre + cur.total, 0);
-const originTotals = originData.reduce((pre, cur) => pre + cur.total, 0)
+  const [messageApi, contextHolderMessage] = message.useMessage();
 
-export default function ShoppingCart() {
-  const [data, setData] = useState(originData);
-  const [subtotals, setSubTotals] = useState(originSubTotals);
-  const [totals, setTotals] = useState(originTotals);
+  const [modal, contextHolder] = Modal.useModal();
 
   const history = useHistory();
 
+  const successConfig = {
+    title: "Success",
+    content: <p>Update Successfully!</p>,
+  };
+  const warningConfig = {
+    title: "Warning",
+    content: <p>Fail to Update!</p>,
+  };
+
+  const removeItem = (id) => {
+    modal.confirm({
+      title: "Confirm",
+      icon: <ExclamationCircleFilled />,
+      content: "Do you want to remove this item ?",
+      okText: "Yes",
+      cancelText: "Cancel",
+      onOk: () => {
+        axios.delete(`/shoppingcarts/deleteById/${id}`).then(() => {
+          setData(data.filter(item => item.id !== id));
+          messageApi.open({
+            type: "success",
+            content: "Remove Successfully"
+          });
+        });
+      },
+      onCancel: () => {
+        messageApi.open({
+          type: 'warning',
+          content: 'Cancel Removing',
+        });
+      }
+    });
+  }
+
+  const updateCart = () => {
+    axios.put("/shoppingcarts/update", data).then(resp => {
+      if(resp.data === "success"){
+        modal.success(successConfig);
+      }else{
+        modal.warning(warningConfig);
+      }
+    })
+  };
+
+  const clearCart = () => {
+    modal.confirm({
+      title: "Confirm",
+      icon: <ExclamationCircleFilled />,
+      content: "Do you want to remove all items ?",
+      okText: "Yes",
+      cancelText: "Cancel",
+      onOk: () => {
+        axios.put("/shoppingcarts/deleteAll", data).then(() => {
+          setData([]);
+          messageApi.open({
+            type: "success",
+            content: "Successfully Remove All Items"
+          });
+        });
+      },
+      onCancel: () => {
+        messageApi.open({
+          type: 'warning',
+          content: 'Cancel Removing All Items',
+        });
+      }
+    });
+  };
+
   useEffect(() => {
-    const newTotal = data.reduce((pre, cur) => pre + cur.total, 0);
+    if (user.id) {
+      axios.get("/shoppingcarts/findByUserId/" + user.id).then((resp) => {
+        setData(resp.data);
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const newTotal = data.reduce(
+      (pre, cur) => pre + cur.quantity * cur.product.price,
+      0
+    );
     setSubTotals(newTotal);
     setTotals(newTotal);
-  },[data])
+  }, [data]);
 
   const columns = [
     {
       title: <h2>Product</h2>,
-      dataIndex: "name",
+      dataIndex: "product",
       key: "name",
-      render: (text, { image }) => (
+      render: ({ image, name }, {id}) => (
         <div className="shopping-cart-product">
           <img
             className="shopping-cart-product-image"
             src={image}
             alt="product"
           />
-          <h4>{text}</h4>
+          <Button
+            shape="circle"
+            icon={<CloseOutlined />}
+            className="shopping-cart-product-delete"
+            onClick={() => removeItem(id)}
+          ></Button>
+          <h4>{name}</h4>
         </div>
       ),
     },
     {
       title: <h2>Price</h2>,
-      dataIndex: "price",
+      dataIndex: "product",
       key: "price",
-      render: (price) => <>{global.priceFilter(price)}</>,
+      render: ({ price }) => <>{global.priceFilter(price)}</>,
     },
     {
       title: <h2>Quantity</h2>,
       dataIndex: "quantity",
       key: "quantity",
-      render: (_, { quantity, key }) => (
+      render: (quantity, { id }) => (
         <InputNumber
           min={1}
           max={10}
           defaultValue={quantity}
-          onChange={(value) => changeQuantity(value, key)}
+          onChange={(value) => changeQuantity(value, id)}
         />
       ),
     },
     {
       title: <h2>Total</h2>,
-      dataIndex: "total",
+      dataIndex: "product",
       key: "total",
-      render: (total) => <>{global.priceFilter(total)}</>,
+      render: ({ price }, { quantity }) => (
+        <>{global.priceFilter(price * quantity)}</>
+      ),
     },
   ];
 
-  const changeQuantity = (value, key) => {
+  const changeQuantity = (value, id) => {
     let newData = data.map((item) => {
-      if (item.key === key) item.total = value * item.price;
+      if (item.id === id) item.quantity = value;
       return item;
     });
     setData(newData);
   };
 
   const goToCheckout = () => {
-    history.push('/checkout');
+    history.push("/checkout");
   };
 
   return (
@@ -103,10 +176,15 @@ export default function ShoppingCart() {
       />
       <div className="shopping-cart-content">
         <div className="shopping-cart-table-container">
-          <Table columns={columns} dataSource={data} pagination={false} />
+          <Table
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+            rowKey="id"
+          />
           <div className="shopping-cart-table-buttons">
-            <Button type="primary">Update Cart</Button>
-            <Button type="primary">Clear Cart</Button>
+            <Button type="primary" onClick={updateCart}>Update Cart</Button>
+            <Button type="primary" onClick={clearCart}>Clear Cart</Button>
           </div>
         </div>
         <div className="shopping-cart-totals">
@@ -151,6 +229,10 @@ export default function ShoppingCart() {
           </Card>
         </div>
       </div>
+      {contextHolder}
+      {contextHolderMessage}
     </div>
   );
-}
+};
+
+export default connect((state) => ({ user: state.user }))(ShoppingCart);

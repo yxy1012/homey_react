@@ -14,6 +14,7 @@
 }
 .trending-item-image{
     width: 100%;
+    height: 15rem;
 }
 .trending-item-originalPrice{
     text-decoration: line-through; 
@@ -41,12 +42,12 @@
 }
 .trend-side-item{
     width: 16rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     display: flex;
-    justify-content: space-between;
 }
 .trend-side-item-image{
     width: 5rem;
+    margin-right: 1rem;
 }
 .trend-side-item-name{
     font-weight: bolder;

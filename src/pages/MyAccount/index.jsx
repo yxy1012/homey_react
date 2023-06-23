@@ -1,11 +1,37 @@
 import React, { useState } from "react";
-import { Card, Form, Input, Button } from "antd";
+import { Card, Form, Input, Button, Modal } from "antd";
+import axios from "@/axios";
 import "./index.css";
+import { connect } from "react-redux";
+import { createStoreUserAction } from "@/redux/actions/user";
+import { useHistory } from "react-router-dom";
 
-export default function MyAccount() {
+const MyAccount = ({ storeUser }) => {
   const [status, setStatus] = useState(1);
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
+
+  const [modal, contextHolder] = Modal.useModal();
+
+  const history = useHistory();
+
+  const config = {
+    title: "Warning",
+    content: <p>Uncorrected password or email address</p>,
+  };
+
+  const login = ({ email, password }) => {
+    axios.get("/user/login/" + email + "/" + password).then((resp) => {
+      const { login, email, id } = resp.data;
+      if (login) {
+        storeUser({ id, email });
+        history.push("/home");
+      } else {
+        modal.warning(config);
+      }
+    });
+  };
+
   return (
     <div>
       <img
@@ -20,7 +46,13 @@ export default function MyAccount() {
             <p className="my-account-hint">
               Please login using account detail below.
             </p>
-            <Form name="basic" className="my-account-form" autoComplete="off" form={loginForm}>
+            <Form
+              name="basic"
+              className="my-account-form"
+              autoComplete="off"
+              form={loginForm}
+              onFinish={login}
+            >
               <Form.Item
                 name="email"
                 className="my-account-input"
@@ -32,7 +64,7 @@ export default function MyAccount() {
                   {
                     required: true,
                     message: "Please input your Email address!",
-                  }
+                  },
                 ]}
               >
                 <Input placeholder="Email address" />
@@ -50,7 +82,10 @@ export default function MyAccount() {
                 <Input.Password placeholder="Password" />
               </Form.Item>
               <Form.Item className="my-account-button">
-                <Button type="primary"> Sign in </Button>
+                <Button type="primary" htmlType="submit">
+                  {" "}
+                  Sign in{" "}
+                </Button>
               </Form.Item>
               <Form.Item>
                 <span className="my-account-switch">
@@ -61,7 +96,6 @@ export default function MyAccount() {
                   style={{ color: "darkgray" }}
                   onClick={() => {
                     setStatus(0);
-                    console.log(loginForm);
                   }}
                 >
                   Create account
@@ -75,7 +109,12 @@ export default function MyAccount() {
             <p className="my-account-hint">
               Please register by creating account below.
             </p>
-            <Form name="basic" className="my-account-form" autoComplete="off" form={registerForm}>
+            <Form
+              name="basic"
+              className="my-account-form"
+              autoComplete="off"
+              form={registerForm}
+            >
               <Form.Item
                 name="email"
                 className="my-account-input"
@@ -87,7 +126,7 @@ export default function MyAccount() {
                   {
                     type: "email",
                     message: "The input is not valid E-mail!",
-                  }
+                  },
                 ]}
               >
                 <Input placeholder="Email address" />
@@ -104,7 +143,7 @@ export default function MyAccount() {
                   {
                     min: 8,
                     message: "The length of the password should be at least 8!",
-                  }
+                  },
                 ]}
               >
                 <Input.Password placeholder="Password" />
@@ -112,7 +151,7 @@ export default function MyAccount() {
               <Form.Item
                 name="repassword"
                 className="my-account-input"
-                dependencies={['password']}
+                dependencies={["password"]}
                 rules={[
                   {
                     required: true,
@@ -120,10 +159,14 @@ export default function MyAccount() {
                   },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
-                      if (!value || getFieldValue('password') === value) {
+                      if (!value || getFieldValue("password") === value) {
                         return Promise.resolve();
                       }
-                      return Promise.reject(new Error('The new password that you entered do not match!'));
+                      return Promise.reject(
+                        new Error(
+                          "The new password that you entered do not match!"
+                        )
+                      );
                     },
                   }),
                 ]}
@@ -152,6 +195,11 @@ export default function MyAccount() {
           </>
         )}
       </Card>
+      {contextHolder}
     </div>
   );
-}
+};
+
+export default connect((state) => ({ user: state.user }), {
+  storeUser: createStoreUserAction,
+})(MyAccount);

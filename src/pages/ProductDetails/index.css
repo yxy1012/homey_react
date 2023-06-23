@@ -14,11 +14,17 @@
     width: 100%;
     display: flex;
 }
+.product-details-side-images-container{
+    margin-right: 1rem;
+}
 .product-details-side-image{
     width: 8rem;
+    height: 7rem;
 }
 .product-details-main-image{
     width: 25rem;
+    height: 22rem;
+    margin-right: 1rem;
 }
 .product-details-icons{
     display: flex;

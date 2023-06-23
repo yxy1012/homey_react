@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Select } from "antd";
 import "./index.css";
-import { nanoid } from "nanoid";
 import { Link } from "react-router-dom";
+import axios from "@/axios";
 
 const options = [
   { label: "All Items", value: "allItems" },
@@ -11,65 +11,35 @@ const options = [
   { label: "Trending Items", value: "trendingList" },
 ];
 
-const allLists = {
-  featuredList: [
-    {
-      image: `${global.constants.s3Resources}BarChair.png`,
-      name: "Bar Chair",
-      price: 15.0,
-    },
-  ],
-  trendingList: [
-    {
-      image: `${global.constants.s3Resources}ElementalChair.png`,
-      name: "Elemental Chair",
-      price: 21.0,
-    },
-  ],
-  latestList: [
-    {
-      image: `${global.constants.s3Resources}VibraniumChair.png`,
-      name: "Sulvex Chair",
-      original_price: 28.0,
-      price: 22.0,
-    },
-  ],
-  allItems: [
-    {
-      image: `${global.constants.s3Resources}SulvexChair.png`,
-      name: "Sulvex Chair",
-      original_price: 32.0,
-      price: 20.0,
-    },
-    {
-      image: `${global.constants.s3Resources}MustardChair.png`,
-      name: "Bermund Chair",
-      original_price: 42.0,
-      price: 26.0,
-    },
-    {
-      image: `${global.constants.s3Resources}MustardChair.png`,
-      name: "Bermund Chair",
-      original_price: 42.0,
-      price: 26.0,
-    },
-    {
-      image: `${global.constants.s3Resources}MustardChair.png`,
-      name: "Bermund Chair",
-      original_price: 42.0,
-      price: 26.0,
-    },
-    {
-      image: `${global.constants.s3Resources}MustardChair.png`,
-      name: "Bermund Chair",
-      original_price: 42.0,
-      price: 26.0,
-    },
-  ],
-};
-
 export default function ShopCatalog() {
-  const [list, setList] = useState(allLists.allItems);
+  const [list, setList] = useState([]);
+  const [allLists, setAllLists] = useState([]);
+
+  useEffect(() => {
+    axios.get("/product/findAll").then((resp) => {
+      const all = [];
+      const featured = [];
+      const latest = [];
+      const trending = [];
+      const collection = [];
+      resp.data.forEach((item) => {
+        all.push(item);
+        if (item.type === 1) {
+          featured.push(item);
+        } else if (item.type === 2) {
+          latest.push(item);
+        } else if (item.type === 3) {
+          trending.push(item);
+        }
+      });
+      collection.allItems = all;
+      collection.featuredList = featured;
+      collection.latestList = latest;
+      collection.trendingList = trending;
+      setAllLists(collection);
+      setList(collection.allItems);
+    });
+  }, []);
   return (
     <Fragment>
       <img
@@ -95,9 +65,9 @@ export default function ShopCatalog() {
       <div className="shop-catalog-content">
         {list.map((item) => (
           <Link
-            style={{ color: "#000000", textDecoration: "none" }}
-            to="/productDetails"
-            key={nanoid()}
+            style={{ color: "black", textDecoration: "none" }}
+            to={{ pathname: "/productDetails", state: { item } }}
+            key={item.id}
           >
             <div className="shop-catalog-item">
               <img className="shop-catalog-image" src={item.image} alt="logo" />

@@ -1,5 +1,5 @@
-import React from "react";
-import { Card, InputNumber, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { Card, InputNumber, Button, Modal } from "antd";
 import {
   HeartOutlined,
   FacebookOutlined,
@@ -7,20 +7,8 @@ import {
   TwitterOutlined,
 } from "@ant-design/icons";
 import "./index.css";
-
-const productDetails = {
-  name: "Bermund Chair",
-  original_price: 42.0,
-  price: 26.0,
-  description:
-    "The layer-glued bent wood frame gives the armchair a comfortable resilience, making it perfect to relax in.",
-  image: `${global.constants.s3Resources}wishItem2.png`,
-  detailImages: [
-    `${global.constants.s3Resources}wishItem2.png`,
-    `${global.constants.s3Resources}wishItem2.png`,
-    `${global.constants.s3Resources}wishItem2.png`,
-  ],
-};
+import axios from "@/axios";
+import { connect } from "react-redux";
 
 const shareIcons = [
   <FacebookOutlined />,
@@ -28,12 +16,58 @@ const shareIcons = [
   <TwitterOutlined />,
 ];
 
-export default function ProductDetails() {
-  //   const [quantity, setQuantity] = useState(1);
+const ProductDetails = (props) => {
+  const product = props.location.state.item;
+  product.detailImages = [product.image, product.image, product.image];
+  const [productDetails, setProductDetails] = useState(product);
+  const [quantity, setQuantity] = useState(1);
+
+  const [modal, contextHolder] = Modal.useModal();
+  
   const onChange = (value) => {
-    console.log("changed", value);
-    // setQuantity(value);
+    setQuantity(value);
   };
+  const successConfig = {
+    title: "Success",
+    content: <p>Add Successfully!</p>
+  };
+  const warningConfig = {
+    title: "Warning",
+    content: <p>Fail to Add!</p>,
+  };
+  const addToCart = () => {
+    const shoppingCarts = {
+      quantity: quantity,
+      user: {id: props.user.id},
+      product: {id: product.id}
+    }
+    axios.post("/shoppingcarts/save", shoppingCarts).then(resp => {
+      if (resp.data === "success") {
+        modal.success(successConfig);
+      } else {
+        modal.warning(warningConfig);
+      }
+    });
+  };
+  const addToWishlist = () => {
+    const wishItem = {
+      user: {id: props.user.id},
+      product: {id: product.id}
+    }
+    axios.post("/wishlist/save", wishItem).then(resp => {
+      if (resp.data === "success") {
+        modal.success(successConfig);
+      } else {
+        modal.warning(warningConfig);
+      }
+    })
+  }
+  useEffect(() => {
+    setProductDetails(product);
+  }, [product]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div>
       <img
@@ -81,21 +115,18 @@ export default function ProductDetails() {
               <InputNumber
                 min={1}
                 max={10}
-                defaultValue={1}
+                defaultValue={quantity}
                 onChange={onChange}
               />
-              <Button
-                type="link"
-                style={{ fontSize: "1rem" }}
-              >
+              <Button type="link" style={{ fontSize: "1rem" }} onClick={addToCart}>
                 Add to Cart
               </Button>
               <Button
                 type="link"
                 style={{ fontSize: "1.5rem", paddingBottom: "2.5rem" }}
                 icon={<HeartOutlined />}
-              >
-              </Button>
+                onClick={addToWishlist}
+              ></Button>
             </div>
             <div className="product-details-share">
               <h3>Share</h3>
@@ -105,13 +136,15 @@ export default function ProductDetails() {
                   type="link"
                   style={{ fontSize: "1.5rem", padding: "0" }}
                   icon={item}
-                >
-                </Button>
+                ></Button>
               ))}
             </div>
           </div>
         </div>
       </Card>
+      {contextHolder}
     </div>
   );
 }
+
+export default connect((state)=>({user: state.user}))(ProductDetails);
